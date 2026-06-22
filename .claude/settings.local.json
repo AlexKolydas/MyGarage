@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(mkdir -p C:/Users/alexk/.claude/projects/C--Users-alexk-AndroidStudioProjects-MyGarage/05290935-6375-48d3-8fba-172fdbb49b89/tool-results/extracted)",
+      "Bash(tar -xzf C:/Users/alexk/.claude/projects/C--Users-alexk-AndroidStudioProjects-MyGarage/05290935-6375-48d3-8fba-172fdbb49b89/tool-results/webfetch-1781637340036-1w98mj.bin -C C:/Users/alexk/.claude/projects/C--Users-alexk-AndroidStudioProjects-MyGarage/05290935-6375-48d3-8fba-172fdbb49b89/tool-results/extracted)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\alexk\\\\AndroidStudioProjects\\\\MyGarage\")",
+      "Bash(mkdir -p \"/c/Users/alexk/AndroidStudioProjects/MyGarage/app/src/main/java/com/alexkolydas/mygarage/data\")",
+      "Bash(mkdir -p \"/c/Users/alexk/AndroidStudioProjects/MyGarage/app/src/main/java/com/alexkolydas/mygarage/ui\")"
+    ]
+  }
+}
