@@ -1,5 +1,6 @@
 package com.alexkolydas.mygarage.feature.detail
 
+import com.alexkolydas.mygarage.core.ui.model.ServiceUi
 import com.alexkolydas.mygarage.core.ui.model.VehicleDetailUi
 
 object DetailContract {
@@ -9,6 +10,10 @@ object DetailContract {
         val isLoading: Boolean = true,
         val showServiceSheet: Boolean = false,
         val serviceForm: ServiceForm = ServiceForm(),
+        val editingServiceId: Long? = null,
+        val contextMenuServiceId: Long? = null,
+        val showDeleteConfirm: Boolean = false,
+        val pendingDeleteId: Long? = null,
     )
 
     sealed interface Intent {
@@ -20,6 +25,12 @@ object DetailContract {
         data object SaveService : Intent
         data object BackClicked : Intent
         data class UpdatePhoto(val uri: String) : Intent
+        data class LongClickService(val serviceId: Long) : Intent
+        data object DismissContextMenu : Intent
+        data class EditServiceClicked(val service: ServiceUi) : Intent
+        data class DeleteServiceClicked(val serviceId: Long) : Intent
+        data object ConfirmDelete : Intent
+        data object DismissDelete : Intent
     }
 
     sealed interface Effect {

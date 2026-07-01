@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -295,8 +296,13 @@ fun DetailScreen(
                     } else {
                         itemsIndexed(d.services, key = { _, s -> s.id }) { index, svc ->
                             ServiceTimelineItem(
-                                svc    = svc,
-                                isLast = index == d.services.lastIndex,
+                                svc          = svc,
+                                isLast       = index == d.services.lastIndex,
+                                showMenu     = state.contextMenuServiceId == svc.id,
+                                onLongClick  = { vm.onIntent(DetailContract.Intent.LongClickService(svc.id)) },
+                                onDismissMenu = { vm.onIntent(DetailContract.Intent.DismissContextMenu) },
+                                onEdit       = { vm.onIntent(DetailContract.Intent.EditServiceClicked(svc)) },
+                                onDelete     = { vm.onIntent(DetailContract.Intent.DeleteServiceClicked(svc.id)) },
                             )
                         }
                     }
@@ -334,6 +340,34 @@ fun DetailScreen(
         }
     }
 
+    // Delete confirmation dialog
+    if (state.showDeleteConfirm) {
+        AlertDialog(
+            onDismissRequest = { vm.onIntent(DetailContract.Intent.DismissDelete) },
+            containerColor   = GarageSurface,
+            title = {
+                Text("Delete service?", fontWeight = FontWeight.Bold, color = GarageTextPrimary)
+            },
+            text = {
+                Text(
+                    "This service record will be permanently removed.",
+                    color = GarageTextSecond,
+                    fontSize = 14.sp,
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { vm.onIntent(DetailContract.Intent.ConfirmDelete) }) {
+                    Text("Delete", color = Color(0xFFFF5252), fontWeight = FontWeight.SemiBold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { vm.onIntent(DetailContract.Intent.DismissDelete) }) {
+                    Text("Cancel", color = GarageTextMid)
+                }
+            },
+        )
+    }
+
     // Service sheet
     if (state.showServiceSheet) {
         AddServiceSheet(state = state, onIntent = vm::onIntent)
@@ -344,8 +378,17 @@ fun DetailScreen(
 // Service timeline item
 // ─────────────────────────────────────────────────────────────────────────────
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ServiceTimelineItem(svc: ServiceUi, isLast: Boolean) {
+private fun ServiceTimelineItem(
+    svc: ServiceUi,
+    isLast: Boolean,
+    showMenu: Boolean,
+    onLongClick: () -> Unit,
+    onDismissMenu: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(14.dp),
@@ -374,15 +417,20 @@ private fun ServiceTimelineItem(svc: ServiceUi, isLast: Boolean) {
             }
         }
 
-        Surface(
-            shape  = RoundedCornerShape(15.dp),
-            color  = GarageSurface,
-            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.07f)),
+        Box(
             modifier = Modifier
                 .weight(1f)
                 .padding(bottom = 14.dp),
         ) {
-            Column(Modifier.padding(horizontal = 15.dp, vertical = 14.dp)) {
+            Surface(
+                shape  = RoundedCornerShape(15.dp),
+                color  = GarageSurface,
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.07f)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .combinedClickable(onClick = {}, onLongClick = onLongClick),
+            ) {
+                Column(Modifier.padding(horizontal = 15.dp, vertical = 14.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment    = Alignment.CenterVertically,
@@ -441,8 +489,32 @@ private fun ServiceTimelineItem(svc: ServiceUi, isLast: Boolean) {
                         color = GarageTextPrimary,
                     )
                 }
+                } // Column
+            } // Surface
+
+            DropdownMenu(
+                expanded         = showMenu,
+                onDismissRequest = onDismissMenu,
+                containerColor   = GarageSurface,
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Edit", color = GarageTextPrimary) },
+                    leadingIcon = {
+                        Icon(Icons.Default.Edit, null, tint = GarageTextSecond,
+                            modifier = Modifier.size(18.dp))
+                    },
+                    onClick = onEdit,
+                )
+                DropdownMenuItem(
+                    text = { Text("Delete", color = Color(0xFFFF5252)) },
+                    leadingIcon = {
+                        Icon(Icons.Default.Delete, null, tint = Color(0xFFFF5252),
+                            modifier = Modifier.size(18.dp))
+                    },
+                    onClick = onDelete,
+                )
             }
-        }
+        } // Box
     }
 }
 
@@ -516,17 +588,23 @@ private fun AddServiceSheet(
         containerColor   = GarageSurfaceSheet,
         shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp),
     ) {
+        val isEdit = state.editingServiceId != null
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 22.dp)
                 .padding(bottom = 26.dp),
         ) {
-            Text("Log a service", fontWeight = FontWeight.Bold, fontSize = 22.sp,
-                color = GarageTextPrimary)
-            Text("Record maintenance and schedule the next one.",
+            Text(
+                if (isEdit) "Edit service" else "Log a service",
+                fontWeight = FontWeight.Bold, fontSize = 22.sp, color = GarageTextPrimary,
+            )
+            Text(
+                if (isEdit) "Update the details for this service record."
+                    else "Record maintenance and schedule the next one.",
                 color = GarageTextSecond, fontSize = 13.sp,
-                modifier = Modifier.padding(top = 3.dp, bottom = 20.dp))
+                modifier = Modifier.padding(top = 3.dp, bottom = 20.dp),
+            )
 
             SheetLabel("ODOMETER (KM)")
             GarageInput(form.km, { onIntent(DetailContract.Intent.UpdateServiceKm(it)) },
@@ -565,7 +643,10 @@ private fun AddServiceSheet(
                     ),
                     modifier = Modifier.weight(1f).height(52.dp),
                 ) {
-                    Text("Save service", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(
+                        if (isEdit) "Save changes" else "Save service",
+                        fontWeight = FontWeight.Bold, fontSize = 15.sp,
+                    )
                 }
             }
         }

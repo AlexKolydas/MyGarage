@@ -8,7 +8,9 @@
       "Bash(tar -xzf C:/Users/alexk/.claude/projects/C--Users-alexk-AndroidStudioProjects-MyGarage/05290935-6375-48d3-8fba-172fdbb49b89/tool-results/webfetch-1781637340036-1w98mj.bin -C C:/Users/alexk/.claude/projects/C--Users-alexk-AndroidStudioProjects-MyGarage/05290935-6375-48d3-8fba-172fdbb49b89/tool-results/extracted)",
       "Bash(dir /s /b \"C:\\\\Users\\\\alexk\\\\AndroidStudioProjects\\\\MyGarage\")",
       "Bash(mkdir -p \"/c/Users/alexk/AndroidStudioProjects/MyGarage/app/src/main/java/com/alexkolydas/mygarage/data\")",
-      "Bash(mkdir -p \"/c/Users/alexk/AndroidStudioProjects/MyGarage/app/src/main/java/com/alexkolydas/mygarage/ui\")"
+      "Bash(mkdir -p \"/c/Users/alexk/AndroidStudioProjects/MyGarage/app/src/main/java/com/alexkolydas/mygarage/ui\")",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Program Files\\\\Android\\\\Android Studio\\\\jbr\"; $env:PATH = \"$env:JAVA_HOME\\\\bin;$env:PATH\"; cd \"C:\\\\Users\\\\alexk\\\\AndroidStudioProjects\\\\MyGarageApp\"; .\\\\gradlew.bat :feature:detail:compileDebugKotlin --no-daemon 2>&1 | Select-Object -Last 50)",
+      "PowerShell(java *)"
     ]
   }
 }

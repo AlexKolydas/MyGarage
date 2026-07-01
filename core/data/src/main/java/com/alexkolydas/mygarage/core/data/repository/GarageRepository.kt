@@ -13,4 +13,6 @@ interface GarageRepository {
     suspend fun updateVehiclePhoto(vehicleId: Long, uri: String)
     suspend fun deleteVehicle(vehicleId: Long)
     suspend fun addService(record: ServiceRecord): Long
+    suspend fun updateService(record: ServiceRecord)
+    suspend fun deleteService(record: ServiceRecord)
 }
