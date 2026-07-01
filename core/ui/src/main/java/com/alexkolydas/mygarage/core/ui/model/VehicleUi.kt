@@ -14,8 +14,10 @@ data class VehicleUi(
 data class ServiceUi(
     val id: Long,
     val vehicleId: Long,
+    val km: Int,
     val kmFormatted: String,
     val work: String,
+    val nextKm: Int?,
     val nextFormatted: String,
     val isLatest: Boolean,
     val urgency: UrgencyUi,

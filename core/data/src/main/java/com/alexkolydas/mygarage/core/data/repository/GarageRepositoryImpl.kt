@@ -23,4 +23,6 @@ internal class GarageRepositoryImpl(
         vehicleDao.updatePhoto(vehicleId, uri)
     override suspend fun deleteVehicle(vehicleId: Long) = vehicleDao.deleteById(vehicleId)
     override suspend fun addService(record: ServiceRecord): Long = serviceRecordDao.insert(record)
+    override suspend fun updateService(record: ServiceRecord) = serviceRecordDao.update(record)
+    override suspend fun deleteService(record: ServiceRecord) = serviceRecordDao.delete(record)
 }

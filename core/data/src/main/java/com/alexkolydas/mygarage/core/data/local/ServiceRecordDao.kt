@@ -15,6 +15,9 @@ interface ServiceRecordDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(record: ServiceRecord): Long
 
+    @Update
+    suspend fun update(record: ServiceRecord)
+
     @Delete
     suspend fun delete(record: ServiceRecord)
 }
