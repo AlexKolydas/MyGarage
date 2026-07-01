@@ -14,6 +14,10 @@ import androidx.navigation.compose.rememberNavController
 import com.alexkolydas.mygarage.core.ui.theme.MyGarageTheme
 import com.alexkolydas.mygarage.feature.detail.DetailScreen
 import com.alexkolydas.mygarage.feature.garage.HomeScreen
+import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
